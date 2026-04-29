@@ -1,8 +1,4 @@
-# ST0245 - SI001: Data Structures and Algorithms
 ## Practice II: DialSort vs Bitonic Sort
-
-**School of Applied Sciences and Engineering - EAFIT University**
-**Lecturer:** Alexander Narvaez Berrio | **April 2026**
 
 ---
 
@@ -26,15 +22,21 @@
 
 ## Execution Instructions
 
-**Requirements:** g++ compiler with C++17 support
+**Requirements:** Any C++17 compiler. Recommended options:
 
-**Compile:**
+- CLion (paste main.cpp and run directly)
+- Online compiler: https://www.onlinegdb.com (select C++17, paste and run)
 
-    g++ -std=c++17 -O2 -o sorter main.cpp
+**Steps in CLion:**
+1. Open CLion and create a new C++ project
+2. Replace the content of main.cpp with the provided code
+3. Click Run
 
-**Run:**
-
-    ./sorter
+**Steps in Online Compiler (onlinegdb.com):**
+1. Go to https://www.onlinegdb.com
+2. Select C++17 from the language dropdown
+3. Paste the content of main.cpp
+4. Click Run
 
 **Interactive Simulation:** Open simulacion.html directly in any modern browser. No server required.
 
