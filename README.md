@@ -1,21 +1,13 @@
-# 📊 ST0245 - SI001: Data Structures and Algorithms
 ## ⚡ Practice II: DialSort vs Bitonic Sort
-
-![EAFIT](https://img.shields.io/badge/EAFIT-University-blue?style=for-the-badge)
-![C++](https://img.shields.io/badge/C++-17-00599C?style=for-the-badge&logo=cplusplus)
-![Status](https://img.shields.io/badge/Status-Complete-success?style=for-the-badge)
-
-> **School of Applied Sciences and Engineering - EAFIT University**
-> **Lecturer:** Alexander Narvaez Berrio | **April 2026**
 
 ---
 
 ## 👥 Team Members
 
-| Name | Student ID |
-|------|------------|
-| Matias Cardona Acosta | [ID] |
-| Simon Madrid Norena | [ID] |
+| Name | 
+|------|
+| Matias Cardona Acosta | 
+| Simon Madrid Norena | 
 
 ---
 
