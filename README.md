@@ -1,4 +1,8 @@
+# ST0245 - SI001: Data Structures and Algorithms
 ## Practice II: DialSort vs Bitonic Sort
+
+**School of Applied Sciences and Engineering - EAFIT University**
+**Lecturer:** Alexander Narvaez Berrio | **April 2026**
 
 ---
 
@@ -6,39 +10,48 @@
 
 | Name | Student ID |
 |------|------------|
-| [Member 1 - complete] | [ID] |
-| [Member 2 - complete] | [ID] |
-
----
-
-## Project Structure
-
-    practice-ii/
-    ├── main.cpp           # C++17: DialSort + Bitonic Sort + Benchmark
-    ├── simulacion.html    # Interactive HTML visualization
-    └── README.md
+| Matias Cardona Acosta | [ID] |
+| Simon Madrid Norena | [ID] |
 
 ---
 
 ## Execution Instructions
 
-**Requirements:** Any C++17 compiler. Recommended options:
+**Requirements:** CLion with C++17 support installed.
 
-- CLion (paste main.cpp and run directly)
-- Online compiler: https://www.onlinegdb.com (select C++17, paste and run)
+**Steps:**
+1. Download the ZIP file from the GitHub repository (green button "Code" -> "Download ZIP")
+2. Extract the ZIP file on your computer
+3. Open CLion
+4. Click Open and select the extracted folder
+5. CLion will detect the CMakeLists.txt automatically — click Trust Project
+6. Click the green Run button
+7. CLion will compile and execute the program automatically
 
-**Steps in CLion:**
-1. Open CLion and create a new C++ project
-2. Replace the content of main.cpp with the provided code
-3. Click Run
+**Dataset:**
+The dataset.txt file is included in the ZIP. Once CLion runs the project
+for the first time it creates the cmake-build-debug folder. Copy dataset.txt
+into that folder so Benchmark 0 can read it.
 
-**Steps in Online Compiler (onlinegdb.com):**
-1. Go to https://www.onlinegdb.com
-2. Select C++17 from the language dropdown
-3. Paste the content of main.cpp
-4. Click Run
+**Interactive Simulation:**
+Open simulacion.html directly in any modern browser. No server required.
 
-**Interactive Simulation:** Open simulacion.html directly in any modern browser. No server required.
+---
+
+## How the Program Uses the Dataset
+
+The program has 4 benchmarks. Only Benchmark 0 reads the dataset.txt file.
+The rest generate their own data in memory to vary n, U and distribution.
+
+| Benchmark | Data Source | Purpose |
+|-----------|-------------|---------|
+| Benchmark 0 | Reads dataset.txt (10,000,000 records) | Sort real file data |
+| Benchmark 1 | Generated in memory | Vary n: 100K to 10M |
+| Benchmark 2 | Generated in memory | Vary U: 1K to 50M |
+| Benchmark 3 | Generated in memory | Vary n and U together |
+
+IMPORTANT: dataset.txt must be placed in the cmake-build-debug folder.
+If the file is not found, Benchmark 0 is skipped but the rest run normally.
 
 ---
 
@@ -84,76 +97,85 @@ Bitonic Sort is a comparison-based sorting network designed for parallel hardwar
 
 Bitonic Sort is not stable but has predictable performance regardless of distribution or universe size.
 
-
-
-
 ---
 
 ## 2. Performance Measurements
 
-### 2.1 Benchmark 1 - Varying N (U = 1,000,000 fixed)
+### 2.1 Benchmark 0 - File Dataset (dataset.txt - 10,000,000 records)
+
+| Metric | DialSort | Bitonic Sort |
+|--------|----------|-------------|
+| Time (ms) | 80.933 | 14,547.092 |
+| Throughput (M/s) | 123.559 | 0.687 |
+| Memory (KB) | 42,968 | 65,536 |
+| Mean value | 499,980.24 | 499,980.24 |
+| Std Deviation | 288,652.91 | 288,652.91 |
+| Winner | DialSort | - |
+
+---
+
+### 2.2 Benchmark 1 - Varying N (U = 1,000,000 fixed)
 
 #### Random Uniform
 
 | N | DialSort (ms) | Bitonic (ms) | DialSort (M/s) | Bitonic (M/s) | Dial Mem (KB) | Bitonic Mem (KB) | Winner |
 |---|--------------|-------------|----------------|---------------|---------------|------------------|--------|
-| 100,000 | 4.427 | 76.772 | 22.587 | 1.303 | 4,296 | 512 | DialSort |
-| 500,000 | 11.977 | 380.770 | 41.746 | 1.313 | 5,859 | 2,048 | DialSort |
-| 1,000,000 | 17.433 | 804.703 | 57.362 | 1.243 | 7,812 | 4,096 | DialSort |
-| 5,000,000 | 56.592 | 7,507.507 | 88.351 | 0.666 | 23,437 | 32,768 | DialSort |
-| 10,000,000 | 103.641 | 16,009.749 | 96.486 | 0.625 | 42,968 | 65,536 | DialSort |
+| 100,000 | 3.940 | 61.791 | 25.381 | 1.618 | 4,296 | 512 | DialSort |
+| 500,000 | 9.976 | 347.011 | 50.123 | 1.441 | 5,859 | 2,048 | DialSort |
+| 1,000,000 | 14.600 | 716.119 | 68.492 | 1.396 | 7,812 | 4,096 | DialSort |
+| 5,000,000 | 46.126 | 6,750.496 | 108.398 | 0.741 | 23,437 | 32,768 | DialSort |
+| 10,000,000 | 90.846 | 14,363.480 | 110.077 | 0.696 | 42,968 | 65,536 | DialSort |
 
 #### Nearly Sorted
 
 | N | DialSort (ms) | Bitonic (ms) | DialSort (M/s) | Bitonic (M/s) | Dial Mem (KB) | Bitonic Mem (KB) | Winner |
 |---|--------------|-------------|----------------|---------------|---------------|------------------|--------|
-| 100,000 | 0.727 | 59.504 | 137.533 | 1.681 | 781 | 512 | DialSort |
-| 500,000 | 5.429 | 329.817 | 92.091 | 1.516 | 3,906 | 2,048 | DialSort |
-| 1,000,000 | 7.535 | 782.397 | 132.716 | 1.278 | 7,812 | 4,096 | DialSort |
-| 5,000,000 | 37.497 | 6,619.146 | 133.343 | 0.755 | 23,437 | 32,768 | DialSort |
-| 10,000,000 | 79.775 | 14,193.053 | 125.352 | 0.705 | 42,968 | 65,536 | DialSort |
+| 100,000 | 0.677 | 58.186 | 147.754 | 1.719 | 781 | 512 | DialSort |
+| 500,000 | 3.608 | 296.781 | 138.566 | 1.685 | 3,906 | 2,048 | DialSort |
+| 1,000,000 | 7.512 | 637.416 | 133.122 | 1.569 | 7,812 | 4,096 | DialSort |
+| 5,000,000 | 29.107 | 6,157.689 | 171.780 | 0.812 | 23,437 | 32,768 | DialSort |
+| 10,000,000 | 66.163 | 13,649.818 | 151.142 | 0.733 | 42,968 | 65,536 | DialSort |
 
 #### Reverse Sorted
 
 | N | DialSort (ms) | Bitonic (ms) | DialSort (M/s) | Bitonic (M/s) | Dial Mem (KB) | Bitonic Mem (KB) | Winner |
 |---|--------------|-------------|----------------|---------------|---------------|------------------|--------|
-| 100,000 | 0.800 | 63.794 | 125.000 | 1.568 | 781 | 512 | DialSort |
-| 500,000 | 4.370 | 420.930 | 114.411 | 1.188 | 3,906 | 2,048 | DialSort |
-| 1,000,000 | 9.783 | 817.846 | 102.214 | 1.223 | 7,812 | 4,096 | DialSort |
-| 5,000,000 | 32.927 | 9,479.630 | 151.851 | 0.527 | 23,437 | 32,768 | DialSort |
-| 10,000,000 | 109.119 | 20,311.965 | 91.643 | 0.492 | 42,968 | 65,536 | DialSort |
-
+| 100,000 | 0.736 | 52.607 | 135.888 | 1.901 | 781 | 512 | DialSort |
+| 500,000 | 4.164 | 272.237 | 120.083 | 1.837 | 3,906 | 2,048 | DialSort |
+| 1,000,000 | 8.759 | 589.357 | 114.166 | 1.697 | 7,812 | 4,096 | DialSort |
+| 5,000,000 | 29.809 | 6,145.686 | 167.732 | 0.814 | 23,437 | 32,768 | DialSort |
+| 10,000,000 | 60.243 | 12,690.902 | 165.993 | 0.788 | 42,968 | 65,536 | DialSort |
 
 
 
 ---
 
-### 2.2 Benchmark 2 - Varying U (N = 1,000,000 fixed)
-
-Shows how universe size U directly impacts DialSort performance.
+### 2.3 Benchmark 2 - Varying U (N = 1,000,000 fixed)
 
 | U | Scenario | DialSort (ms) | Bitonic (ms) | DialSort (M/s) | Bitonic (M/s) | Dial Mem (KB) | Bitonic Mem (KB) | Winner |
 |---|----------|--------------|-------------|----------------|---------------|---------------|------------------|--------|
-| 1,000 | U much less than n | 6.905 | 1,090.344 | 144.823 | 0.917 | 3,910 | 4,096 | DialSort |
-| 100,000 | U less than n | 8.560 | 991.436 | 116.822 | 1.009 | 4,296 | 4,096 | DialSort |
-| 1,000,000 | U equals n | 19.152 | 993.523 | 52.214 | 1.007 | 7,812 | 4,096 | DialSort |
-| 10,000,000 | U greater than n | 114.301 | 1,062.717 | 8.749 | 0.941 | 42,968 | 4,096 | DialSort |
-| 50,000,000 | U much greater than n | 319.005 | 1,266.708 | 3.135 | 0.789 | 199,218 | 4,096 | DialSort |
+| 1,000 | U much less than n | 4.771 | 783.321 | 209.622 | 1.277 | 3,910 | 4,096 | DialSort |
+| 100,000 | U less than n | 5.862 | 710.094 | 170.596 | 1.408 | 4,296 | 4,096 | DialSort |
+| 1,000,000 | U equals n | 18.590 | 736.643 | 53.792 | 1.358 | 7,812 | 4,096 | DialSort |
+| 10,000,000 | U greater than n | 53.477 | 790.788 | 18.700 | 1.265 | 42,968 | 4,096 | DialSort |
+| 50,000,000 | U much greater than n | 172.179 | 726.685 | 5.808 | 1.376 | 199,218 | 4,096 | DialSort |
 
-Key observation: As U grows from 1K to 50M, DialSort time increases 46x while Bitonic Sort stays stable around 1,000ms. DialSort memory grows from 3.9MB to 199MB.
+Key observation: As U grows from 1K to 50M, DialSort time increases 36x
+(4.7ms to 172ms) while Bitonic Sort stays stable around 750ms.
+DialSort memory grows from 3.9MB to 199MB.
 
 ---
 
-### 2.3 Benchmark 3 - Varying N and U Together
+### 2.4 Benchmark 3 - Varying N and U Together
 
 | N | U | Scenario | DialSort (ms) | Bitonic (ms) | Dial Mem (KB) | Bitonic Mem (KB) | Winner |
 |---|---|----------|--------------|-------------|---------------|------------------|--------|
-| 100,000 | 1,000 | U much less than n | 0.484 | 82.212 | 394 | 512 | DialSort |
-| 100,000 | 1,000,000 | U much greater than n | 7.493 | 148.641 | 4,296 | 512 | DialSort |
-| 1,000,000 | 1,000,000 | U equals n | 39.525 | 1,371.951 | 7,812 | 4,096 | DialSort |
-| 1,000,000 | 50,000,000 | U much greater than n | 273.252 | 1,325.791 | 199,218 | 4,096 | DialSort |
-| 10,000,000 | 1,000,000 | U less than n | 118.885 | 17,979.648 | 42,968 | 65,536 | DialSort |
-| 10,000,000 | 10,000,000 | U equals n | 341.294 | 15,979.707 | 78,124 | 65,536 | DialSort |
+| 100,000 | 1,000 | U much less than n | 0.448 | 67.693 | 394 | 512 | DialSort |
+| 100,000 | 1,000,000 | U much greater than n | 5.403 | 70.624 | 4,296 | 512 | DialSort |
+| 1,000,000 | 1,000,000 | U equals n | 16.684 | 730.859 | 7,812 | 4,096 | DialSort |
+| 1,000,000 | 50,000,000 | U much greater than n | 172.692 | 741.643 | 199,218 | 4,096 | DialSort |
+| 10,000,000 | 1,000,000 | U less than n | 84.745 | 14,533.008 | 42,968 | 65,536 | DialSort |
+| 10,000,000 | 10,000,000 | U equals n | 364.658 | 14,766.256 | 78,124 | 65,536 | DialSort |
 
 ---
 
@@ -177,17 +199,24 @@ Key observation: As U grows from 1K to 50M, DialSort time increases 46x while Bi
 
 DialSort won in every single test under sequential execution:
 
-- At n=10M, U=1M: DialSort 103ms vs Bitonic 16,009ms — DialSort is 154x faster
-- At n=10M, U=10M: DialSort 341ms vs Bitonic 15,979ms — DialSort is 46x faster
-- Even at U=50M: DialSort 319ms vs Bitonic 1,266ms — DialSort still wins
+- At n=10M from file: DialSort 80ms vs Bitonic 14,547ms — 179x faster
+- At n=10M Random: DialSort 90ms vs Bitonic 14,363ms — 158x faster
+- At n=10M Nearly Sorted: DialSort 66ms vs Bitonic 13,649ms — 206x faster
+- At n=10M Reverse Sorted: DialSort 60ms vs Bitonic 12,690ms — 211x faster
+- At n=10M, U=10M: DialSort 364ms vs Bitonic 14,766ms — 40x faster
+- Even at U=50M: DialSort 172ms vs Bitonic 726ms — DialSort still wins
 
-However the results also reveal DialSort weakness: when U grows from 1K to 50M, DialSort slows down 46x and memory grows from 3.9MB to 199MB.
+However DialSort weakness is clear: when U grows from 1K to 50M,
+DialSort slows down 36x and memory grows from 3.9MB to 199MB.
 
 ### 3.3 Conclusions
 
 - DialSort is the best choice for sequential execution when U = O(n)
-- Bitonic Sort is the best choice for GPU or parallel environments, or when sorting non-integer data
-- For very large sparse universes, Bitonic Sort becomes competitive in both speed and memory
+- Bitonic Sort is the best choice for GPU or parallel environments
+- DialSort is not affected by data distribution — same performance on
+  Random, Nearly Sorted and Reverse Sorted
+- For very large sparse universes, Bitonic Sort becomes competitive
+  in memory usage
 
 ---
 
@@ -197,3 +226,4 @@ However the results also reveal DialSort weakness: when U grows from 1K to 50M, 
 |-----------|------|---------|-------|-------|--------|----------|
 | DialSort | O(n+U) | O(n+U) | O(n+U) | O(n+U) | Yes | No |
 | Bitonic Sort | O(n log^2 n) | O(n log^2 n) | O(n log^2 n) | O(n log^2 n) | No | Yes |
+
