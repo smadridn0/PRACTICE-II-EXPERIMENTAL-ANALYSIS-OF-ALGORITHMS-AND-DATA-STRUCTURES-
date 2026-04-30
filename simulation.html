@@ -1,1 +1,304 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Practice II: Experimental Analysis of Algorithms and Data Structures</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+  :root {
+    --bg:#0a0a0f; --panel:#111118; --border:#1e1e2e;
+    --dial:#00e5ff; --dial-dim:#005f6b;
+    --bitonic:#ff6b35; --bitonic-dim:#7a2f10;
+    --text:#e2e8f0; --muted:#64748b; --accent:#a855f7;
+    --green:#22c55e; --yellow:#eab308; --bar-h:160px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+  .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:2rem;}
+  header{text-align:center;padding:3rem 0 2rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem;}
+  header .tag{font-size:.7rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:.75rem;}
+  header h1{font-family:'Syne',sans-serif;font-size:clamp(1.2rem,3vw,2rem);font-weight:800;background:linear-gradient(135deg,var(--dial) 0%,var(--accent) 50%,var(--bitonic) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem;line-height:1.2;}
+  header p{color:var(--muted);font-size:.85rem;}
+  .controls{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:1rem;margin-bottom:2rem;align-items:end;}
+  .ctrl label{display:block;font-size:.7rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem;}
+  .ctrl input[type=range]{width:100%;accent-color:var(--dial);}
+  .ctrl select{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:.5rem .75rem;font-family:'Space Mono',monospace;font-size:.8rem;border-radius:6px;cursor:pointer;}
+  .ctrl .val{font-size:.75rem;color:var(--dial);margin-top:.25rem;}
+  .btn{padding:.7rem 1.5rem;font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;border:none;border-radius:8px;cursor:pointer;transition:all .15s;letter-spacing:.05em;}
+  .btn-primary{background:linear-gradient(135deg,var(--dial),var(--accent));color:#000;}
+  .btn-primary:hover{filter:brightness(1.15);transform:translateY(-1px);}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+  .btn-reset{background:transparent;border:1px solid var(--border);color:var(--muted);margin-left:.5rem;}
+  .btn-reset:hover{border-color:var(--bitonic);color:var(--bitonic);}
+  .algo-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+  @media(max-width:700px){.algo-grid{grid-template-columns:1fr;}.controls{grid-template-columns:1fr 1fr;}}
+  .algo-panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.5rem;position:relative;overflow:hidden;}
+  .algo-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .algo-panel.dial::before{background:linear-gradient(90deg,var(--dial),var(--dial-dim));}
+  .algo-panel.bitonic::before{background:linear-gradient(90deg,var(--bitonic),var(--bitonic-dim));}
+  .algo-panel h2{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:.25rem;}
+  .algo-panel.dial h2{color:var(--dial);}
+  .algo-panel.bitonic h2{color:var(--bitonic);}
+  .algo-panel .complexity{font-size:.7rem;color:var(--muted);margin-bottom:1.2rem;}
+  .bars-container{height:var(--bar-h);display:flex;align-items:flex-end;gap:2px;background:rgba(255,255,255,.02);border-radius:6px;padding:4px;overflow:hidden;margin-bottom:1rem;}
+  .bar{flex:1;border-radius:2px 2px 0 0;transition:height .08s ease,background .08s;min-width:2px;}
+  .algo-panel.dial .bar{background:var(--dial-dim);}
+  .algo-panel.bitonic .bar{background:var(--bitonic-dim);}
+  .bar.active{background:#fff!important;}
+  .bar.comparing{background:var(--yellow)!important;}
+  .algo-panel.dial .bar.sorted{background:var(--dial)!important;}
+  .algo-panel.bitonic .bar.sorted{background:var(--bitonic)!important;}
+  .step-log{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;padding:.75rem 1rem;font-size:.72rem;min-height:3.5rem;color:var(--muted);line-height:1.6;}
+  .step-log span{color:var(--text);}
+  .stats-row{display:flex;gap:1rem;margin-top:.75rem;}
+  .stat{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;flex:1;}
+  .stat .slabel{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+  .stat .sval{font-size:.95rem;font-weight:700;font-family:'Syne',sans-serif;margin-top:.1rem;}
+  .algo-panel.dial .stat .sval{color:var(--dial);}
+  .algo-panel.bitonic .stat .sval{color:var(--bitonic);}
+  .phases{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;}
+  .phase-pill{font-size:.65rem;padding:.2rem .6rem;border-radius:999px;border:1px solid var(--border);color:var(--muted);transition:all .3s;}
+  .phase-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+  .complexity-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:2rem;}
+  .complexity-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--accent);margin-bottom:1rem;letter-spacing:.05em;}
+  table{width:100%;border-collapse:collapse;font-size:.8rem;}
+  th{text-align:left;padding:.5rem .75rem;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);}
+  td{padding:.5rem .75rem;border-bottom:1px solid rgba(255,255,255,.04);}
+  tr:last-child td{border-bottom:none;}
+  .tag-dial{color:var(--dial);font-weight:700;}
+  .tag-bitonic{color:var(--bitonic);font-weight:700;}
+  .bench-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:2rem;}
+  .bench-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--accent);margin-bottom:1.5rem;letter-spacing:.05em;}
+  .bench-row{margin-bottom:1rem;}
+  .bench-label{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:.3rem;color:var(--muted);}
+  .bench-bars{display:flex;gap:.4rem;}
+  .bench-bar-wrap{flex:1;}
+  .bench-bar-bg{background:rgba(255,255,255,.05);border-radius:4px;height:20px;overflow:hidden;}
+  .bench-bar-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;padding-left:.4rem;font-size:.65rem;font-weight:700;white-space:nowrap;}
+  .fill-dial{background:linear-gradient(90deg,var(--dial-dim),var(--dial));color:#000;}
+  .fill-bitonic{background:linear-gradient(90deg,var(--bitonic-dim),var(--bitonic));color:#000;}
+  .progress-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:1rem;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--dial),var(--accent));width:0%;transition:width .1s;border-radius:2px;}
+  footer{text-align:center;padding:2rem 0;color:var(--muted);font-size:.7rem;border-top:1px solid var(--border);margin-top:1rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="tag">Matias Cardona Acosta &nbsp;|&nbsp; Simon Madrid Norena</div>
+    <h1>PRACTICE II: EXPERIMENTAL ANALYSIS OF ALGORITHMS AND DATA STRUCTURES</h1>
+    <p>DialSort vs Bitonic Sort</p>
+  </header>
+  <div class="controls">
+    <div class="ctrl">
+      <label>Array Size (n)</label>
+      <input type="range" id="sizeSlider" min="8" max="80" value="30" step="1">
+      <div class="val" id="sizeVal">n = 30</div>
+    </div>
+    <div class="ctrl">
+      <label>Universe Size (U)</label>
+      <input type="range" id="univSlider" min="10" max="200" value="50" step="5">
+      <div class="val" id="univVal">U = 50</div>
+    </div>
+    <div class="ctrl">
+      <label>Distribution</label>
+      <select id="distSelect">
+        <option value="random">Random Uniform</option>
+        <option value="nearly">Nearly Sorted</option>
+        <option value="reverse">Reverse Sorted</option>
+        <option value="clustered">Clustered</option>
+      </select>
+    </div>
+    <div>
+      <button class="btn btn-primary" id="runBtn">Run</button>
+      <button class="btn btn-reset" id="resetBtn">Reset</button>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="algo-grid">
+    <div class="algo-panel dial">
+      <h2>DialSort</h2>
+      <div class="complexity">O(n + U) - Histogram / Counting Sort variant</div>
+      <div class="phases">
+        <div class="phase-pill" id="d-p1">1. Find Min/Max</div>
+        <div class="phase-pill" id="d-p2">2. Build Histogram</div>
+        <div class="phase-pill" id="d-p3">3. Reconstruct</div>
+        <div class="phase-pill" id="d-p4">Done</div>
+      </div>
+      <div class="bars-container" id="dialBars"></div>
+      <div class="step-log" id="dialLog">Waiting to start...</div>
+      <div class="stats-row">
+        <div class="stat"><div class="slabel">Time (ms)</div><div class="sval" id="dialTime">-</div></div>
+        <div class="stat"><div class="slabel">Operations</div><div class="sval" id="dialOps">-</div></div>
+        <div class="stat"><div class="slabel">Memory</div><div class="sval" id="dialMem">-</div></div>
+      </div>
+    </div>
+    <div class="algo-panel bitonic">
+      <h2>Bitonic Sort</h2>
+      <div class="complexity">O(n log2 n) - Comparison-based, parallel-ready</div>
+      <div class="phases">
+        <div class="phase-pill" id="b-p1">1. Pad to 2^k</div>
+        <div class="phase-pill" id="b-p2">2. Build Bitonic Seq</div>
+        <div class="phase-pill" id="b-p3">3. Merge</div>
+        <div class="phase-pill" id="b-p4">Done</div>
+      </div>
+      <div class="bars-container" id="bitonicBars"></div>
+      <div class="step-log" id="bitonicLog">Waiting to start...</div>
+      <div class="stats-row">
+        <div class="stat"><div class="slabel">Time (ms)</div><div class="sval" id="bitonicTime">-</div></div>
+        <div class="stat"><div class="slabel">Comparisons</div><div class="sval" id="bitonicOps">-</div></div>
+        <div class="stat"><div class="slabel">Memory</div><div class="sval" id="bitonicMem">-</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="complexity-card">
+    <h3>// Big-O Complexity Analysis</h3>
+    <table>
+      <thead><tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable?</th><th>Parallel?</th></tr></thead>
+      <tbody>
+        <tr><td class="tag-dial">DialSort</td><td>O(n+U)</td><td>O(n+U)</td><td>O(n+U)</td><td>O(n+U)</td><td style="color:var(--green)">Yes</td><td style="color:var(--muted)">No</td></tr>
+        <tr><td class="tag-bitonic">Bitonic Sort</td><td>O(n log2n)</td><td>O(n log2n)</td><td>O(n log2n)</td><td>O(n log2n)</td><td style="color:var(--muted)">No</td><td style="color:var(--green)">Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="bench-card">
+    <h3>// Real Benchmark Results (ms) - Random Uniform Distribution</h3>
+    <div id="benchChart"></div>
+  </div>
+  <footer>PRACTICE II: Experimental Analysis of Algorithms and Data Structures &nbsp;|&nbsp; Matias Cardona Acosta &nbsp;|&nbsp; Simon Madrid Norena &nbsp;|&nbsp; April 2026</footer>
+</div>
+<script>
+function generateData(n,U,dist){
+  let arr=[];
+  if(dist==='random'){for(let i=0;i<n;i++)arr.push(Math.floor(Math.random()*U));}
+  else if(dist==='nearly'){for(let i=0;i<n;i++)arr.push(i%U);for(let i=0;i<Math.floor(n*.05);i++){let a=Math.floor(Math.random()*n),b=Math.floor(Math.random()*n);[arr[a],arr[b]]=[arr[b],arr[a]];}}
+  else if(dist==='reverse'){for(let i=n-1;i>=0;i--)arr.push(i%U);}
+  else{const c=[Math.floor(U*.1),Math.floor(U*.5),Math.floor(U*.9)];for(let i=0;i<n;i++){const v=c[Math.floor(Math.random()*c.length)];arr.push(Math.max(0,Math.min(U-1,v+Math.floor(Math.random()*10)-5)));}}
+  return arr;
+}
+function renderBars(id,arr,activeIdx=[],comparingIdx=[],sortedUpTo=-1){
+  const container=document.getElementById(id);
+  const max=Math.max(...arr,1);
+  container.innerHTML='';
+  arr.forEach((v,i)=>{
+    const bar=document.createElement('div');bar.className='bar';
+    bar.style.height=Math.max(4,(v/max)*96)+'%';
+    if(activeIdx.includes(i))bar.classList.add('active');
+    else if(comparingIdx.includes(i))bar.classList.add('comparing');
+    else if(i<=sortedUpTo)bar.classList.add('sorted');
+    container.appendChild(bar);
+  });
+}
+async function runDialSort(arr,delay){
+  let ops=0;const n=arr.length;
+  setPhase('d',1);setLog('dial','<span>Phase 1:</span> Scanning '+n+' elements for min/max...');
+  renderBars('dialBars',arr);await sleep(delay*3);
+  let mn=arr[0],mx=arr[0];
+  for(let i=1;i<n;i++){ops++;if(arr[i]<mn)mn=arr[i];if(arr[i]>mx)mx=arr[i];}
+  const U=mx-mn+1;
+  setLog('dial','<span>Phase 1 done:</span> min='+mn+', max='+mx+', U='+U);await sleep(delay*2);
+  setPhase('d',2);setLog('dial','<span>Phase 2:</span> Building histogram...');
+  const H=new Array(U).fill(0);
+  for(let i=0;i<n;i++){H[arr[i]-mn]++;ops++;if(i%Math.max(1,Math.floor(n/15))===0){renderBars('dialBars',arr,[i]);await sleep(delay);}}
+  setLog('dial','<span>Phase 2 done:</span> Non-zero buckets: '+H.filter(x=>x>0).length);await sleep(delay*2);
+  setPhase('d',3);
+  const result=[];
+  for(let y=0;y<U;y++){for(let c=0;c<H[y];c++){result.push(y+mn);ops++;}
+    if(y%Math.max(1,Math.floor(U/15))===0){renderBars('dialBars',result.concat(arr.slice(result.length)),[],[],result.length-1);await sleep(delay);}}
+  renderBars('dialBars',result,[],[],result.length-1);
+  setPhase('d',4);setLog('dial','<span>Done!</span> '+n+' elements, '+ops+' operations');
+  return{arr:result,ops,memKB:Math.round((n+U)*4/1024)};
+}
+let bOps=0,bSteps=[];
+function bMerge(a,lo,cnt,asc){
+  if(cnt<=1)return;const k=Math.floor(cnt/2);
+  for(let i=lo;i<lo+k;i++){bOps++;if((a[i]>a[i+k])===asc){[a[i],a[i+k]]=[a[i+k],a[i]];bSteps.push({arr:[...a],active:[i,i+k]});}}
+  bMerge(a,lo,k,asc);bMerge(a,lo+k,k,asc);
+}
+function bSort(a,lo,cnt,asc){
+  if(cnt<=1)return;const k=Math.floor(cnt/2);
+  bSort(a,lo,k,true);bSort(a,lo+k,k,false);bMerge(a,lo,cnt,asc);
+}
+async function runBitonicSort(arr,delay){
+  bOps=0;bSteps=[];
+  setPhase('b',1);setLog('bitonic','<span>Phase 1:</span> Padding '+arr.length+' to power of 2...');
+  renderBars('bitonicBars',arr);await sleep(delay*3);
+  let pw=1;while(pw<arr.length)pw<<=1;
+  const PAD=99999;const padded=[...arr];
+  while(padded.length<pw)padded.push(PAD);
+  setLog('bitonic','<span>Phase 1 done:</span> Padded to '+pw);await sleep(delay*2);
+  setPhase('b',2);setLog('bitonic','<span>Phase 2:</span> Building bitonic sequences...');
+  bSort(padded,0,pw,true);
+  const total=bSteps.length;const skip=Math.max(1,Math.floor(total/40));
+  setPhase('b',3);
+  for(let s=0;s<total;s++){
+    if(s%skip===0){
+      const st=bSteps[s];
+      renderBars('bitonicBars',st.arr.map(x=>x===PAD?0:x),st.active);
+      setLog('bitonic','<span>Phase 3:</span> Merge step '+(s+1)+'/'+total);
+      await sleep(delay);
+    }
+  }
+  const final=padded.slice(0,arr.length);
+  renderBars('bitonicBars',final,[],[],final.length-1);
+  setPhase('b',4);setLog('bitonic','<span>Done!</span> '+arr.length+' elements, '+bOps+' comparisons');
+  return{arr:final,ops:bOps,memKB:Math.round(pw*4/1024)};
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function setLog(w,h){document.getElementById(w+'Log').innerHTML=h;}
+function setPhase(a,n){for(let i=1;i<=4;i++)document.getElementById(a+'-p'+i).classList.toggle('active',i===n);}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+function renderBenchChart(){
+  const sizes=['100K','500K','1M','5M','10M'];
+  const dialMs=[3.940,9.976,14.600,46.126,90.846];
+  const bitonMs=[61.791,347.011,716.119,6750.496,14363.480];
+  const chart=document.getElementById('benchChart');chart.innerHTML='';
+  const maxVal=Math.max(...dialMs,...bitonMs);
+  sizes.forEach((sz,i)=>{
+    const row=document.createElement('div');row.className='bench-row';
+    const label=document.createElement('div');label.className='bench-label';
+    label.innerHTML='<span>n = '+sz+'</span><span style="color:var(--muted);font-size:.65rem">DialSort: '+dialMs[i]+'ms | Bitonic: '+bitonMs[i]+'ms</span>';
+    row.appendChild(label);
+    const bars=document.createElement('div');bars.className='bench-bars';
+    const mkBar=(val,cls,lbl)=>{
+      const wrap=document.createElement('div');wrap.className='bench-bar-wrap';wrap.style.maxWidth='48%';
+      const bg=document.createElement('div');bg.className='bench-bar-bg';
+      const fill=document.createElement('div');fill.className='bench-bar-fill '+cls;fill.style.width='0%';fill.textContent=lbl;
+      bg.appendChild(fill);wrap.appendChild(bg);
+      setTimeout(()=>{fill.style.width=Math.max(4,(val/maxVal)*100)+'%';},100+i*150);
+      return wrap;
+    };
+    bars.appendChild(mkBar(dialMs[i],'fill-dial','Dial'));
+    bars.appendChild(mkBar(bitonMs[i],'fill-bitonic','Bitonic'));
+    row.appendChild(bars);chart.appendChild(row);
+  });
+}
+document.getElementById('sizeSlider').addEventListener('input',function(){document.getElementById('sizeVal').textContent='n = '+this.value;});
+document.getElementById('univSlider').addEventListener('input',function(){document.getElementById('univVal').textContent='U = '+this.value;});
+document.getElementById('resetBtn').addEventListener('click',()=>location.reload());
+document.getElementById('runBtn').addEventListener('click',async()=>{
+  const btn=document.getElementById('runBtn');btn.disabled=true;setProgress(0);
+  const n=parseInt(document.getElementById('sizeSlider').value);
+  const U=parseInt(document.getElementById('univSlider').value);
+  const dist=document.getElementById('distSelect').value;
+  const delay=Math.max(30,Math.floor(1500/n));
+  const arr=generateData(n,U,dist);
+  setProgress(10);
+  const[dialRes,bitonicRes]=await Promise.all([runDialSort([...arr],delay),runBitonicSort([...arr],delay)]);
+  setProgress(100);
+  document.getElementById('dialTime').textContent='done';
+  document.getElementById('dialOps').textContent=dialRes.ops.toLocaleString();
+  document.getElementById('dialMem').textContent=dialRes.memKB+' KB';
+  document.getElementById('bitonicTime').textContent='done';
+  document.getElementById('bitonicOps').textContent=bitonicRes.ops.toLocaleString();
+  document.getElementById('bitonicMem').textContent=bitonicRes.memKB+' KB';
+  btn.disabled=false;btn.textContent='Run Again';
+});
+renderBenchChart();
+const init=generateData(30,50,'random');
+renderBars('dialBars',init);renderBars('bitonicBars',init);
+</script>
+</body>
+</html>
