@@ -13,8 +13,6 @@
 
 ## 🚀 Execution Instructions
 
-![CLion](https://img.shields.io/badge/CLion-Recommended-black?style=flat-square&logo=clion)
-
 **Requirements:** CLion with C++17 support installed.
 
 **Steps:**
