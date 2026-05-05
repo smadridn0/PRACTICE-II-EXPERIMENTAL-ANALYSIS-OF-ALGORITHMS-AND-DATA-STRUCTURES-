@@ -6,8 +6,8 @@
 
 | Name | 
 |------|
-| Matias Cardona Acosta | 
-| Simon Madrid Norena | 
+| Matías Cardona Acosta | 
+| Simón Madrid Noreña | 
 
 ---
 
